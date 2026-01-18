@@ -1,0 +1,60 @@
+# FastAPI and Server
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+
+# Database
+sqlalchemy==2.0.23
+asyncpg==0.29.0
+alembic==1.12.1
+psycopg2-binary==2.9.11
+pgvector==0.4.2
+
+# Pydantic and Validation
+pydantic==2.5.2
+pydantic-settings==2.1.0
+
+# LangChain and Agents
+langchain==0.0.350
+langchain-community==0.0.10
+
+# Vector Database
+qdrant-client==1.16.2
+
+# Redis
+redis==5.0.1
+hiredis==2.2.3
+
+# Document Processing
+PyMuPDF>=1.24.0
+python-docx==1.1.0
+
+# Text Processing
+jieba==0.42.1
+rank-bm25==0.2.2
+
+# Embeddings
+sentence-transformers==2.2.2
+torch==2.0.1
+transformers==4.35.2
+FlagEmbedding==1.2.5
+
+# LLM
+zhipuai==1.0.7
+openai==1.6.1
+
+# Utilities
+python-dotenv==1.0.0
+httpx==0.25.2
+tenacity==8.2.3
+
+# Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+httpx==0.25.2
+
+# Code Quality
+black==23.12.1
+isort==5.13.2
+flake8==7.0.0
+mypy==1.8.0
