@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from 'react'
 import { apiClient } from '@/lib/api'
-import { FileText, Download, Trash2, Search } from 'lucide-react'
+import { FileText, Trash2, Search, PlayCircle, Eye } from 'lucide-react'
 import { Toaster } from '@/components/toaster'
 import { useToast } from '@/hooks/use-toast'
+import { useRouter } from 'next/navigation'
 
 export default function ContractsPage() {
+  const router = useRouter()
   const { toast } = useToast()
   const [documents, setDocuments] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -27,6 +29,44 @@ export default function ContractsPage() {
       })
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleAnalyze = async (docId: string, fileName: string) => {
+    try {
+      // TODO: Read file content and call analysis API
+      // For now, just show a toast
+      toast({
+        title: 'Analysis Feature',
+        description: 'Full analysis integration coming soon. Please upload a new contract.',
+      })
+    } catch (error) {
+      toast({
+        title: 'Analysis Failed',
+        description: error instanceof Error ? error.message : 'An error occurred',
+        duration: 5000,
+      })
+    }
+  }
+
+  const handleDelete = async (docId: string) => {
+    if (!confirm('Are you sure you want to delete this contract?')) {
+      return
+    }
+
+    try {
+      await apiClient.deleteDocument(docId)
+      toast({
+        title: 'Contract Deleted',
+        description: 'The contract has been removed from the system',
+      })
+      loadDocuments()
+    } catch (error) {
+      toast({
+        title: 'Deletion Failed',
+        description: error instanceof Error ? error.message : 'An error occurred',
+        duration: 5000,
+      })
     }
   }
 
@@ -78,13 +118,42 @@ export default function ContractsPage() {
                   <div>
                     <h4 className="font-medium text-gray-900">{doc.title}</h4>
                     <div className="text-sm text-gray-600">
-                      Status: {doc.status} · Type: {doc.file_type.toUpperCase()}
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                        doc.status === 'indexed' ? 'bg-green-100 text-green-800' :
+                        doc.status === 'processing' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {doc.status}
+                      </span>
+                      {' · '}
+                      Type: {doc.file_type.toUpperCase()}
+                      {doc.file_size && ` · ${doc.file_size}`}
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Download className="h-4 w-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
-                  <Trash2 className="h-4 w-4 text-gray-400 hover:text-red-600 cursor-pointer" />
+                  <button
+                    onClick={() => handleAnalyze(doc.id, doc.file_name)}
+                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                    title="Analyze"
+                  >
+                    <PlayCircle className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => router.push(`/report/${doc.id}`)}
+                    className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                    title="View Report"
+                    disabled={doc.status !== 'indexed'}
+                  >
+                    <Eye className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(doc.id)}
+                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    title="Delete"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
                 </div>
               </div>
             ))}

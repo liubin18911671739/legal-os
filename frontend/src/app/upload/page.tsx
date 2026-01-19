@@ -38,9 +38,6 @@ export default function UploadPage() {
 
     try {
       for (const file of files) {
-        const formData = new FormData()
-        formData.append('file', file)
-
         // Create document record first
         const document = await apiClient.createDocument({
           title: file.name.replace(/\.[^/.]+$/, ''),
@@ -51,23 +48,28 @@ export default function UploadPage() {
 
         toast({
           title: 'File uploaded successfully',
-          description: `${file.name} has been added to the system`,
+          description: `${file.name} has been added to system`,
         })
 
         console.log('Created document:', document)
+
+        // Read file content for analysis
+        const fileText = await readFileContent(file)
+
+        // Trigger contract analysis
+        const contractType = detectContractType(file.name)
+        const analysisResponse = await apiClient.analyzeContract({
+          contract_id: document.id,
+          contract_text: fileText,
+          contract_type: contractType,
+          user_query: 'Please analyze this contract for risks and compliance issues',
+        })
+
+        console.log('Analysis started:', analysisResponse)
+
+        // Navigate to analysis progress page
+        router.push(`/analysis/${analysisResponse.task_id}`)
       }
-
-      setUploaded(true)
-      toast({
-        title: 'Upload completed',
-        description: `${files.length} file(s) uploaded successfully`,
-        duration: 3000,
-      })
-
-      // Navigate to contracts page after delay
-      setTimeout(() => {
-        router.push('/contracts')
-      }, 1500)
     } catch (error) {
       console.error('Upload error:', error)
       toast({
@@ -78,6 +80,25 @@ export default function UploadPage() {
     } finally {
       setUploading(false)
     }
+  }
+
+  const readFileContent = async (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = (e) => resolve(e.target?.result as string)
+      reader.onerror = (e) => reject(new Error('Failed to read file'))
+      reader.readAsText(file)
+    })
+  }
+
+  const detectContractType = (fileName: string): 'employment' | 'sales' | 'lease' | 'service' | 'purchase' | 'other' => {
+    const name = fileName.toLowerCase()
+    if (name.includes('employment') || name.includes('contract') && name.includes('work')) return 'employment'
+    if (name.includes('sales') || name.includes('purchase')) return 'sales'
+    if (name.includes('lease')) return 'lease'
+    if (name.includes('service')) return 'service'
+    if (name.includes('purchase')) return 'purchase'
+    return 'other'
   }
 
   return (
@@ -111,24 +132,12 @@ export default function UploadPage() {
             disabled={uploading}
           />
 
-          {uploaded ? (
-            <div className="flex flex-col items-center gap-4">
-              <CheckCircle2 className="h-16 w-16 text-green-500" />
-              <div className="text-center">
-                <h3 className="text-xl font-semibold text-gray-900 mb-1">
-                  Upload Complete!
-                </h3>
-                <p className="text-gray-600">
-                  Redirecting to contracts page...
-                </p>
-              </div>
-            </div>
-          ) : uploading ? (
+          {uploading ? (
             <div className="flex flex-col items-center gap-4">
               <div className="h-16 w-16 border-4 border-t-blue-600 border-blue-200 rounded-full animate-spin" />
               <div className="text-center">
                 <h3 className="text-xl font-semibold text-gray-900 mb-1">
-                  Uploading...
+                  Uploading & Analyzing...
                 </h3>
                 <p className="text-gray-600">
                   Please wait while we process your files
@@ -155,7 +164,7 @@ export default function UploadPage() {
         </div>
 
         {/* File List */}
-        {files.length > 0 && !uploaded && (
+        {files.length > 0 && (
           <div className="mt-8 bg-white rounded-xl border border-gray-200 p-6">
             <h3 className="text-lg font-semibold mb-4">
               Selected Files ({files.length})

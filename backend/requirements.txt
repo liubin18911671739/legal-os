@@ -17,6 +17,7 @@ pydantic-settings==2.1.0
 # LangChain and Agents
 langchain==0.0.350
 langchain-community==0.0.10
+langgraph==0.2.0
 
 # Vector Database
 qdrant-client==1.16.2
@@ -58,3 +59,11 @@ black==23.12.1
 isort==5.13.2
 flake8==7.0.0
 mypy==1.8.0
+
+# Logging & Monitoring
+structlog==23.2.0
+prometheus-client==0.19.0
+
+# Tracing
+langsmith==0.1.4
+langfuse==2.10.0

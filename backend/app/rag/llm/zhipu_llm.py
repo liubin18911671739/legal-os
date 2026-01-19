@@ -2,12 +2,18 @@ from typing import List, Dict, Any, AsyncIterator, Optional
 import logging
 import httpx
 import json
+from .base import BaseLLM
 
 logger = logging.getLogger(__name__)
 
 
-class ZhipuLLM:
+class ZhipuLLM(BaseLLM):
     """ZhipuAI GLM language model implementation"""
+
+    @property
+    def model_name(self) -> str:
+        """Return model name"""
+        return self.model
 
     def __init__(
         self,

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { Scale, FileText, BarChart3, UploadCloud, Activity } from 'lucide-react'
+import { Scale, FileText, BarChart3, UploadCloud, Activity, TrendingUp } from 'lucide-react'
 
 const navigation = [
   {
@@ -30,6 +30,11 @@ const navigation = [
     name: 'Analysis Progress',
     href: '/analysis',
     icon: Activity,
+  },
+  {
+    name: 'Evaluation',
+    href: '/evaluation',
+    icon: TrendingUp,
   },
 ]
 

@@ -38,6 +38,22 @@ class Settings(BaseSettings):
     CHUNK_SIZE: int = 512
     CHUNK_OVERLAP: int = 100
     
+    # Tracing - LangSmith
+    LANGCHAIN_TRACING_V2: bool = False
+    LANGCHAIN_API_KEY: str = ""
+    LANGCHAIN_PROJECT: str = "legal-os"
+    LANGCHAIN_ENDPOINT: str = ""
+    
+    # Tracing - LangFuse
+    LANGFUSE_PUBLIC_KEY: str = ""
+    LANGFUSE_SECRET_KEY: str = ""
+    LANGFUSE_HOST: str = "https://cloud.langfuse.com"
+    LANGFUSE_ENABLED: bool = False
+    
+    # Tracing settings
+    TRACE_ENABLED: bool = False
+    TRACE_SAMPLE_RATE: float = 1.0
+    
     class Config:
         env_file = ".env"
         case_sensitive = True

@@ -12,7 +12,7 @@ class RedisEmbeddingCache:
     def __init__(
         self,
         redis_url: str = "redis://localhost:6379",
-        embedding_model: BaseEmbeddingModel = None,
+        embedding_model: Optional[BaseEmbeddingModel] = None,
         ttl: int = 86400,  # 24 hours
         key_prefix: str = "emb:",
     ):
@@ -25,7 +25,7 @@ class RedisEmbeddingCache:
             key_prefix: Prefix for cache keys
         """
         self.redis_url = redis_url
-        self.embedding_model = embedding_model
+        self._embedding_model = embedding_model
         self.ttl = ttl
         self.key_prefix = key_prefix
         
@@ -87,7 +87,9 @@ class RedisEmbeddingCache:
         # Generate embeddings for cache misses
         if indices_to_fetch:
             miss_texts = [text for _, text in indices_to_fetch]
-            miss_embeddings = await self.embedding_model.embed(miss_texts, **kwargs)
+            if self._embedding_model is None:
+                raise RuntimeError("Embedding model not set")
+            miss_embeddings = await self._embedding_model.embed(miss_texts, **kwargs)
             
             # Store in cache
             for idx, (orig_idx, _) in enumerate(indices_to_fetch):
@@ -159,8 +161,10 @@ class RedisEmbeddingCache:
     @property
     def dimension(self) -> int:
         """Return dimension of embeddings"""
-        return self.embedding_model.dimension
-
+        if self._embedding_model:
+            return self._embedding_model.dimension
+        return 1024  # Default for BGE-large-zh-v1.5
+    
     @property
     def hit_rate(self) -> float:
         """Calculate cache hit rate"""
