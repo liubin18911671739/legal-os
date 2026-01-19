@@ -1,13 +1,10 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { Layout as AppLayout } from "@/components/layout";
 
-const inter = Inter({ subsets: ["latin"] });
-
 export const metadata: Metadata = {
-  title: "LegalOS - Enterprise Legal Intelligence",
-  description: "Multi-agent RAG system for contract analysis and legal review",
+  title: "LegalOS - 企业法律智能分析系统",
+  description: "基于多智能体 RAG 的合同审查与法律合规分析平台",
 };
 
 export default function RootLayout({
@@ -16,8 +13,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="zh-CN">
+      <body className="font-sans antialiased">
         <AppLayout>{children}</AppLayout>
       </body>
     </html>

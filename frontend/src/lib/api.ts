@@ -91,7 +91,7 @@ export interface AnalysisResult {
     risk_matrix: {
       legal_risk: string
       financial_risk: string
-      operational_rost: string
+      operational_risk: string
     }
     suggestions: string[]
   }
@@ -117,98 +117,6 @@ export interface ExportStatus {
   download_url?: string
   file_size?: number
   error?: string
-}
-
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-
-export interface ApiResponse<T> {
-  success: boolean
-  message?: string
-  data?: T
-}
-
-export interface ApiError {
-  success: false
-  message: string
-  detail?: string
-}
-
-export interface Document {
-  id: string
-  title: string
-  file_name: string
-  file_type: 'pdf' | 'docx' | 'txt'
-  status: 'uploading' | 'processing' | 'indexed' | 'failed'
-  vectorized: boolean
-  created_at: string
-  updated_at: string
-  meta?: Record<string, any>
-  file_path?: string
-  file_size?: string
-}
-
-export interface DocumentListResponse {
-  items: Document[]
-  total: number
-  page: number
-  size: number
-  pages: number
-}
-
-export interface Task {
-  id: string
-  task_type: string
-  status: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled'
-  progress: number
-  current_stage?: string
-  input_data?: Record<string, any>
-  output_data?: Record<string, any>
-  error_message?: string
-  started_at?: string
-  completed_at?: string
-  created_at: string
-  updated_at: string
-}
-
-export interface ContractAnalysisRequest {
-  contract_id: string
-  contract_text: string
-  contract_type: 'employment' | 'sales' | 'lease' | 'service' | 'purchase' | 'other'
-  user_query?: string
-}
-
-export interface ContractAnalysisResponse {
-  task_id: string
-  status: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled'
-  message: string
-}
-
-export interface AnalysisResult {
-  task_id: string
-  contract_id: string
-  contract_type: string
-  task_status: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled'
-  agent_history: string[]
-  analysis_confidence: number
-  overall_risk: 'low' | 'medium' | 'high' | 'unknown'
-  validation_confidence: number
-  final_answer: string
-  report?: {
-    executive_summary: string
-    findings: Array<{
-      category: string
-      severity: 'low' | 'medium' | 'high'
-      description: string
-      suggestion?: string
-      citation?: string
-    }>
-    risk_matrix: {
-      legal_risk: string
-      financial_risk: string
-      operational_risk: string
-    }
-    suggestions: string[]
-  }
 }
 
 export class ApiClient {
