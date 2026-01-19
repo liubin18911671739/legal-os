@@ -7,7 +7,7 @@ This module provides API endpoints for exporting reports in PDF and DOCX formats
 import logging
 import io
 import time
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from datetime import datetime
 from fastapi import APIRouter, HTTPException, status, BackgroundTasks, UploadFile
 from pydantic import BaseModel, Field
@@ -80,7 +80,7 @@ async def export_pdf(
         background_tasks.add_task(
             _generate_pdf_background,
             export_id,
-            request.task_id
+            request.task_id,
             request.include_charts
         )
         
@@ -116,7 +116,7 @@ async def export_docx(
         background_tasks.add_task(
             _generate_docx_background,
             export_id,
-            request.task_id
+            request.task_id,
             request.include_charts
         )
         

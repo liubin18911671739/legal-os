@@ -7,7 +7,7 @@ generating mock data, and validating data quality.
 
 import logging
 from typing import Dict, Any, List, Optional
-from fastapi import APIRouter, HTTPException, status, BackgroundTasks
+from fastapi import APIRouter, HTTPException, status, BackgroundTasks, Query
 from pydantic import BaseModel, Field
 import time
 from datetime import datetime
@@ -18,6 +18,8 @@ from app.evaluation import (
     BaselineType,
     ExperimentConfig,
     EvaluationMetrics,
+    DataValidator,
+    ContractDataGenerator,
 )
 from app.services.export_service import create_export_service
 
@@ -31,7 +33,6 @@ golden_dataset = GoldenDataset()
 
 # Initialize data validator
 data_validator = DataValidator()
-
 
 # Pydantic models
 class EvaluationRequest(BaseModel):
@@ -428,9 +429,9 @@ async def _run_evaluation_background(
 # Data Generation Endpoints
 @router.post("/data/generate", status_code=status.HTTP_201_CREATED)
 async def generate_mock_data(
-    num_contracts: int = Field(100, ge=1, le=1000, description="Number of contracts to generate"),
-    output_dir: str = Field("data/evaluation/generated", description="Output directory for generated data"),
-    seed: Optional[int] = Field(None, description="Random seed for reproducibility")
+    num_contracts: int = Query(100, ge=1, le=1000, description="Number of contracts to generate"),
+    output_dir: str = Query("data/evaluation/generated", description="Output directory for generated data"),
+    seed: Optional[int] = Query(None, description="Random seed for reproducibility")
 ):
     """
     Generate mock contract data for testing.
@@ -473,7 +474,7 @@ async def generate_mock_data(
 # Data Validation Endpoints
 @router.post("/data/validate")
 async def validate_dataset(
-    dataset_path: str = Field(..., description="Path to dataset directory to validate")
+    dataset_path: str = Query(..., description="Path to dataset directory to validate")
 ):
     """
     Validate a dataset for data quality and integrity.
@@ -523,7 +524,7 @@ async def validate_dataset(
 
 @router.get("/data/validate/report")
 async def get_validation_report(
-    dataset_path: str = Field(..., description="Path to dataset directory")
+    dataset_path: str = Query(..., description="Path to dataset directory")
 ):
     """
     Get validation report for a dataset.
@@ -559,8 +560,8 @@ async def get_validation_report(
 
 @router.post("/data/generate-and-validate")
 async def generate_and_validate(
-    num_contracts: int = Field(100, ge=1, le=1000),
-    seed: Optional[int] = None
+    num_contracts: int = Query(100, ge=1, le=1000),
+    seed: Optional[int] = Query(None)
 ):
     """
     Generate mock data and validate it in one operation.

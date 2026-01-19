@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     API_V1_PREFIX: str = "/api/v1"
     PROJECT_NAME: str = "LegalOS"
+    NEXT_PUBLIC_API_URL: Optional[str] = None
     
     # Embeddings
     EMBEDDING_MODEL: str = "BAAI/bge-large-zh-v1.5"
@@ -57,6 +58,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = True
+        extra = "ignore"
 
 
 # Global settings instance
